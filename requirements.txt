@@ -1,0 +1,6 @@
+customtkinter
+packaging
+pillow
+yfinance
+pytest
+watchdog
