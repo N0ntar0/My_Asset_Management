@@ -54,8 +54,19 @@ def calculate_allocation(surplus_funds: int, current_buffer: int, current_living
     # Remaining logic
     if current_buffer < buffer_target:
         # Buffer Recovery Mode
-        buffer_alloc = remaining_surplus // 2
-        investment_alloc = remaining_surplus - buffer_alloc
+        needed_for_buffer = buffer_target - current_buffer
+        
+        # Standard: 50% to Buffer
+        tentative_buffer_alloc = remaining_surplus // 2
+        
+        # Cap logic: Don't exceed target
+        if tentative_buffer_alloc > needed_for_buffer:
+            buffer_alloc = needed_for_buffer
+            # Remaining goes to investment
+            investment_alloc = remaining_surplus - buffer_alloc
+        else:
+            buffer_alloc = tentative_buffer_alloc
+            investment_alloc = remaining_surplus - buffer_alloc
         
         mode = '予備費補填モード'
         if living_expenses_alloc > 0:
