@@ -1,7 +1,12 @@
 import customtkinter as ctk
 from ..data_manager import DataManager
 from ..logic import calculate_allocation
-from ..config import FONT_FAMILY
+
+from ..config import (
+    FONT_FAMILY, 
+    FONT_SIZE_SMALL, FONT_SIZE_NORMAL, FONT_SIZE_LARGE, FONT_SIZE_TITLE,
+    BASE_FONT_TITLE, BASE_FONT_NORMAL, BASE_FONT_ENTRIES, BASE_FONT_BUTTONS
+)
 from .custom_window import CustomToplevel
 
 class ResizableFrame(ctk.CTkFrame):
@@ -19,7 +24,7 @@ class ResizableFrame(ctk.CTkFrame):
         top.attributes("-topmost", True)
         
         # Use content_frame
-        textbox = ctk.CTkTextbox(top.content_frame, font=ctk.CTkFont(family=FONT_FAMILY, size=16))
+        textbox = ctk.CTkTextbox(top.content_frame, font=ctk.CTkFont(family=FONT_FAMILY, size=FONT_SIZE_NORMAL))
         textbox.pack(fill="both", expand=True, padx=20, pady=20)
         
         logs = self.data_manager.get_recent_logs(10)
@@ -38,7 +43,7 @@ class ResizableFrame(ctk.CTkFrame):
         self._center_popup(popup, 400, 200)
         popup.attributes("-topmost", True)
         
-        label = ctk.CTkLabel(popup.content_frame, text="資産状況を変更しますか？", font=ctk.CTkFont(family=FONT_FAMILY, size=20))
+        label = ctk.CTkLabel(popup.content_frame, text="資産状況を変更しますか？", font=ctk.CTkFont(family=FONT_FAMILY, size=FONT_SIZE_LARGE))
         label.pack(expand=True, padx=20, pady=20)
         
         btn_frame = ctk.CTkFrame(popup.content_frame, fg_color="transparent")
@@ -67,7 +72,7 @@ class ResizableFrame(ctk.CTkFrame):
             ("住信SBI (生活防衛)", "sumishin_sbi")
         ]
         
-        font_config = ctk.CTkFont(family=FONT_FAMILY, size=18)
+        font_config = ctk.CTkFont(family=FONT_FAMILY, size=FONT_SIZE_LARGE)
         
         for i, (label_text, key) in enumerate(assets):
             label = ctk.CTkLabel(edit_win.content_frame, text=label_text, font=font_config)
@@ -94,7 +99,7 @@ class ResizableFrame(ctk.CTkFrame):
         popup.attributes("-topmost", True)
         
         label = ctk.CTkLabel(popup.content_frame, text="全ての資産情報を0にリセットしますか？\nこの操作は取り消せません。", 
-                             font=ctk.CTkFont(family=FONT_FAMILY, size=16), justify="center")
+                             font=ctk.CTkFont(family=FONT_FAMILY, size=FONT_SIZE_NORMAL), justify="center")
         label.pack(expand=True, padx=20, pady=20)
         
         btn_frame = ctk.CTkFrame(popup.content_frame, fg_color="transparent")
@@ -114,7 +119,7 @@ class ResizableFrame(ctk.CTkFrame):
         popup.attributes("-topmost", True)
         
         label = ctk.CTkLabel(popup.content_frame, text="本当に実行しますか？\n全てのデータが失われます。", 
-                             font=ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold"), text_color="red", justify="center")
+                             font=ctk.CTkFont(family=FONT_FAMILY, size=FONT_SIZE_NORMAL, weight="bold"), text_color="red", justify="center")
         label.pack(expand=True, padx=20, pady=20)
         
         btn_frame = ctk.CTkFrame(popup.content_frame, fg_color="transparent")
@@ -142,7 +147,7 @@ class ResizableFrame(ctk.CTkFrame):
         settings = self.data_manager.get_settings()
         entries = {}
         
-        font_config = ctk.CTkFont(family=FONT_FAMILY, size=16)
+        font_config = ctk.CTkFont(family=FONT_FAMILY, size=FONT_SIZE_NORMAL)
         
         fields = [
             ("生活費目標 (PayPay)", "living_target", 100000),
@@ -176,11 +181,11 @@ class ResizableFrame(ctk.CTkFrame):
         
         # Base font sizes
         self.base_sizes = {
-            "title": 42,
-            "normal": 28,
-            "mode": 28,
-            "entries": 28,
-            "buttons": 28
+            "title": BASE_FONT_TITLE,
+            "normal": BASE_FONT_NORMAL,
+            "mode": BASE_FONT_NORMAL,
+            "entries": BASE_FONT_ENTRIES,
+            "buttons": BASE_FONT_BUTTONS
         }
 
     def add_widget(self, category, widget, wrap=False):
