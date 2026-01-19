@@ -82,6 +82,7 @@ python dev.py
 .
 ├── src/
 │   ├── main.py           # エントリーポイント
+│   ├── config.py         # OS依存設定（フォント等）
 │   ├── logic.py          # 配分ロジック計算
 │   ├── data_manager.py   # データ読み書き・ログ管理
 │   └── ui/
