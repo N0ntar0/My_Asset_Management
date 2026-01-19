@@ -14,16 +14,27 @@ class ReloadHandler(FileSystemEventHandler):
 
     def restart(self):
         if self.process:
-            # Send SIGTERM to the process group to ensure all children are killed
-            try:
-                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
-            except ProcessLookupError:
-                pass
+            print("Stopping current process...")
+            if os.name == 'nt':
+                # Windows: Simple terminate
+                self.process.terminate()
+            else:
+                # Unix: Send SIGTERM to process group
+                try:
+                    os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+            
             self.process.wait() # Wait for process to terminate
 
         print(f"Starting application: {' '.join(self.command)}")
-        # Start new process in a new process group
-        self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
+        
+        if os.name == 'nt':
+            # Windows: No setsid needed/available
+            self.process = subprocess.Popen(self.command)
+        else:
+            # Unix: Start in new process group
+            self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
 
     def on_modified(self, event):
         if event.is_directory:

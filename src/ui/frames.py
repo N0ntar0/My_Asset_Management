@@ -217,6 +217,12 @@ class ResizableFrame(ctk.CTkFrame):
                 widget.configure(wraplength=wrap_length)
              # If we decide to wrap other widgets (like buttons?), handled here.
 
+    def _center_popup(self, popup, w, h):
+        master = self.winfo_toplevel()
+        x = master.winfo_x() + (master.winfo_width() - w) // 2
+        y = master.winfo_y() + (master.winfo_height() - h) // 2
+        popup.geometry(f"{w}x{h}+{x}+{y}")
+
 class DashboardFrame(ResizableFrame):
     def __init__(self, master, data_manager: DataManager, **kwargs):
         super().__init__(master, **kwargs)
@@ -296,19 +302,10 @@ class DashboardFrame(ResizableFrame):
         popup = CustomToplevel(self, title="Confirmation")
         
         # Calculate center position relative to main window
-        master_window = self.winfo_toplevel()
-        master_w = master_window.winfo_width()
-        master_h = master_window.winfo_height()
-        master_x = master_window.winfo_x()
-        master_y = master_window.winfo_y()
-        
         popup_w = 450
         popup_h = 300
+        self._center_popup(popup, popup_w, popup_h)
         
-        pos_x = master_x + (master_w - popup_w) // 2
-        pos_y = master_y + (master_h - popup_h) // 2
-        
-        popup.geometry(f"{popup_w}x{popup_h}+{pos_x}+{pos_y}")
         # Attributes handled by CustomToplevel logic (topmost/lift)
         
         label = ctk.CTkLabel(popup.content_frame, text="資産状況を変更しますか？", font=ctk.CTkFont(family=FONT_FAMILY, size=24))
@@ -329,7 +326,7 @@ class DashboardFrame(ResizableFrame):
     def show_edit_form(self):
         # 2. Edit Popup
         edit_win = CustomToplevel(self, title="Edit Assets")
-        edit_win.geometry("500x750")
+        self._center_popup(edit_win, 500, 500)
         # Attributes handled by CustomToplevel
         
         edit_entries = {}
@@ -377,10 +374,12 @@ class DashboardFrame(ResizableFrame):
         btn_frame.pack(fill="x", padx=20, pady=20)
         
         yes_btn = ctk.CTkButton(btn_frame, text="次へ", fg_color="red", width=100, 
-                                command=lambda: [popup.destroy(), self.confirm_reset_step2(parent)])
+                                command=lambda: [popup.destroy(), self.confirm_reset_step2(parent)],
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         yes_btn.pack(side="left", padx=20, expand=True)
         
-        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy)
+        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy,
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         no_btn.pack(side="right", padx=20, expand=True)
 
     def confirm_reset_step2(self, parent):
@@ -397,23 +396,22 @@ class DashboardFrame(ResizableFrame):
         btn_frame.pack(fill="x", padx=20, pady=20)
         
         yes_btn = ctk.CTkButton(btn_frame, text="実行する", fg_color="red", width=100, 
-                                command=lambda: [popup.destroy(), self.execute_reset(parent)])
+                                command=lambda: [popup.destroy(), self.execute_reset(parent)],
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         yes_btn.pack(side="left", padx=20, expand=True)
         
-        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy)
+        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy,
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         no_btn.pack(side="right", padx=20, expand=True)
 
     def execute_reset(self, parent_window):
+        # ... existing code ...
         self.data_manager.reset_assets()
         self.data_manager.add_log("資産状況がリセットされました")
         parent_window.destroy()
         self.refresh()
         
-    def _center_popup(self, popup, w, h):
-        master = self.winfo_toplevel()
-        x = master.winfo_x() + (master.winfo_width() - w) // 2
-        y = master.winfo_y() + (master.winfo_height() - h) // 2
-        popup.geometry(f"{w}x{h}+{x}+{y}")
+    # _center_popup moved to ResizableFrame
 
     def save_from_popup(self, entries, window):
         for key, entry in entries.items():
@@ -459,7 +457,7 @@ class DashboardFrame(ResizableFrame):
 
     def show_history_popup(self):
         top = CustomToplevel(self, title="History (Last 10)")
-        top.geometry("700x550")
+        self._center_popup(top, 700, 550)
         
         # Attributes handled by CustomToplevel
         
@@ -645,10 +643,7 @@ class SimulatorFrame(ResizableFrame):
     def show_logic_edit_form(self):
         edit_win = CustomToplevel(self, title="Edit Settings")
         # Center popup
-        master_win = self.winfo_toplevel()
-        x = master_win.winfo_x() + (master_win.winfo_width() - 450)//2
-        y = master_win.winfo_y() + (master_win.winfo_height() - 500)//2
-        edit_win.geometry(f"450x500+{x}+{y}")
+        self._center_popup(edit_win, 450, 330)
         # Attributes handled by CustomToplevel
         
         settings = self.data_manager.get_settings()
