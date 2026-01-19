@@ -326,7 +326,7 @@ class DashboardFrame(ResizableFrame):
     def show_edit_form(self):
         # 2. Edit Popup
         edit_win = CustomToplevel(self, title="Edit Assets")
-        self._center_popup(edit_win, 500, 750)
+        self._center_popup(edit_win, 500, 480)
         # Attributes handled by CustomToplevel
         
         edit_entries = {}
@@ -374,10 +374,12 @@ class DashboardFrame(ResizableFrame):
         btn_frame.pack(fill="x", padx=20, pady=20)
         
         yes_btn = ctk.CTkButton(btn_frame, text="次へ", fg_color="red", width=100, 
-                                command=lambda: [popup.destroy(), self.confirm_reset_step2(parent)])
+                                command=lambda: [popup.destroy(), self.confirm_reset_step2(parent)],
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         yes_btn.pack(side="left", padx=20, expand=True)
         
-        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy)
+        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy,
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         no_btn.pack(side="right", padx=20, expand=True)
 
     def confirm_reset_step2(self, parent):
@@ -394,10 +396,12 @@ class DashboardFrame(ResizableFrame):
         btn_frame.pack(fill="x", padx=20, pady=20)
         
         yes_btn = ctk.CTkButton(btn_frame, text="実行する", fg_color="red", width=100, 
-                                command=lambda: [popup.destroy(), self.execute_reset(parent)])
+                                command=lambda: [popup.destroy(), self.execute_reset(parent)],
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         yes_btn.pack(side="left", padx=20, expand=True)
         
-        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy)
+        no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy,
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
         no_btn.pack(side="right", padx=20, expand=True)
 
     def execute_reset(self, parent_window):
@@ -453,7 +457,7 @@ class DashboardFrame(ResizableFrame):
 
     def show_history_popup(self):
         top = CustomToplevel(self, title="History (Last 10)")
-        top.geometry("700x550")
+        self._center_popup(top, 700, 550)
         
         # Attributes handled by CustomToplevel
         
@@ -639,7 +643,7 @@ class SimulatorFrame(ResizableFrame):
     def show_logic_edit_form(self):
         edit_win = CustomToplevel(self, title="Edit Settings")
         # Center popup
-        self._center_popup(edit_win, 450, 500)
+        self._center_popup(edit_win, 450, 330)
         # Attributes handled by CustomToplevel
         
         settings = self.data_manager.get_settings()

@@ -12,7 +12,7 @@ LIFE_DEFENSE_TARGET_AMOUNT = 1500000 # 1,500,000 JPY (Reference)
 import platform
 
 # UI Configuration
-FONT_FAMILY = "Noto Sans CJK JP"
+# FONT_FAMILY defined below based on OS
 
 # Font Sizes (OS-Dependent)
 # Linux often needs larger base sizes if DPI scaling is not automatically handled by CTK/interop.
@@ -22,6 +22,11 @@ is_desktop_os = system in ["Windows", "Darwin"]
 
 if is_desktop_os:
     # Windows / Mac
+    if system == "Windows":
+        FONT_FAMILY = "Yu Gothic UI"
+    else:
+        FONT_FAMILY = "Hiragino Sans" # Mac fallback
+        
     FONT_SIZE_SMALL = 12
     FONT_SIZE_NORMAL = 14
     FONT_SIZE_LARGE = 18
@@ -44,6 +49,9 @@ else:
     BASE_FONT_NORMAL = 28
     BASE_FONT_ENTRIES = 24
     BASE_FONT_BUTTONS = 24
+
+if system == "Linux":
+     FONT_FAMILY = "Noto Sans CJK JP"
 
 # Investment Ratio (Reference for future use)
 INVESTMENT_RATIO = {
