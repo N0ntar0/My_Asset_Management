@@ -15,7 +15,10 @@ def main():
     ctk.set_default_color_theme("blue")
     
     app = App()
-    app.run()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        pass
 
 if __name__ == "__main__":
     main()

@@ -7,8 +7,16 @@ class App(ctk.CTk, CustomWindowMixin):
     def __init__(self):
         super().__init__()
 
-        self.geometry("1200x900")
-        self.minsize(960, 720)
+        # Center the window
+        window_width = 1000
+        window_height = 750
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        
+        self.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.minsize(800, 600)
         
         # Custom Title Bar Setup
         self.setup_custom_title_bar("Nontaro Asset Manager", resizeable=True)
