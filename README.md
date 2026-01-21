@@ -25,7 +25,8 @@ PythonのGUIライブラリ `CustomTkinter` を採用し、モダンで視認性
 - **資産情報の編集**: 各口座の残高を手動で修正することも可能です。
 
 ### 4. UI / UX
-- **レスポンシブ対応**: ウィンドウサイズの変更に合わせてレイアウトが自動調整され、文字サイズも読みやすい大きさに最適化されています。
+- **視認性の最適化**: 幅広い年齢層や環境に対応するため、フォントサイズを大きく設定し（標準24px〜）、ボタン類も押しやすいサイズ（高さ60px〜）に調整しています。
+- **OSごとの最適表示**: macOS/Windows/Linuxそれぞれのフォントレンダリング特性に合わせ、最適なフォントファミリとサイズを自動選択します。
 - **入力フォーカス制御**: Linux環境等での入力トラブルを回避するため、堅牢なフォーカス制御（クリック時の強制フォーカス取得など）を実装しています。
 - **標準ウィンドウ**: OS標準のウィンドウフレームを採用し、安定した操作性（移動、サイズ変更、最小化/最大化）を確保しています。
 
@@ -76,6 +77,29 @@ python src/main.py
 ```bash
 python dev.py
 ```
+
+### トラブルシューティング
+
+#### macOSで `ModuleNotFoundError: No module named '_tkinter'` が発生する場合
+Pythonが `tcl-tk` ライブラリを見つけられていない可能性があります。以下の手順で再インストールしてください。
+
+1. **tcl-tk のインストール** (Homebrew使用):
+   ```bash
+   brew install tcl-tk
+   ```
+
+2. **Python の再ビルド**:
+   ```bash
+   env \
+     PATH="$(brew --prefix tcl-tk)/bin:$PATH" \
+     LDFLAGS="-L$(brew --prefix tcl-tk)/lib" \
+     CPPFLAGS="-I$(brew --prefix tcl-tk)/include" \
+     PKG_CONFIG_PATH="$(brew --prefix tcl-tk)/lib/pkgconfig" \
+     CFLAGS="-I$(brew --prefix tcl-tk)/include" \
+     PYTHON_CONFIGURE_OPTS="--with-tcltk-includes='-I$(brew --prefix tcl-tk)/include' --with-tcltk-libs='-L$(brew --prefix tcl-tk)/lib -ltcl8.6 -ltk8.6'" \
+     pyenv install 3.12.8
+   ```
+   ※ バージョン部分は適宜使用しているものに合わせてください。
 
 ## 📁 ディレクトリ構成
 ```
