@@ -24,19 +24,29 @@ if is_desktop_os:
     # Windows / Mac
     if system == "Windows":
         FONT_FAMILY = "Yu Gothic UI"
+        BASE_FONT_BUTTONS = 24 # Extremely large
     else:
-        FONT_FAMILY = "Hiragino Sans" # Mac fallback
+        FONT_FAMILY = "Hiragino Sans" 
+        BASE_FONT_BUTTONS = 22 # Very large for buttons
         
-    FONT_SIZE_SMALL = 12
-    FONT_SIZE_NORMAL = 14
-    FONT_SIZE_LARGE = 18
-    FONT_SIZE_TITLE = 24
+    FONT_SIZE_SMALL = 18 # 16 -> 18
+    FONT_SIZE_NORMAL = 24 # 20 -> 24
+    FONT_SIZE_LARGE = 30 # 24 -> 30
+    FONT_SIZE_TITLE = 40 # 32 -> 40
     
     # Resizable Frame Base Sizes
-    BASE_FONT_TITLE = 28
-    BASE_FONT_NORMAL = 16
-    BASE_FONT_ENTRIES = 16
-    BASE_FONT_BUTTONS = 16
+    BASE_FONT_TITLE = 42 # 36 -> 42
+    BASE_FONT_NORMAL = 26 # 22 -> 26
+    BASE_FONT_ENTRIES = 26 # 22 -> 26
+    # BASE_FONT_BUTTONS handled above
+    
+    # Button Heights
+    if system == "Darwin":
+        BUTTON_HEIGHT_SMALL = 20 
+        BUTTON_HEIGHT_NORMAL = 40
+    else:
+        BUTTON_HEIGHT_SMALL = 32
+        BUTTON_HEIGHT_NORMAL = 48
 else:
     # Linux (or others) - Keeping the large sizes requested
     FONT_SIZE_SMALL = 16
@@ -49,6 +59,9 @@ else:
     BASE_FONT_NORMAL = 28
     BASE_FONT_ENTRIES = 24
     BASE_FONT_BUTTONS = 24
+
+    BUTTON_HEIGHT_SMALL = 32
+    BUTTON_HEIGHT_NORMAL = 40
 
 if system == "Linux":
      FONT_FAMILY = "Noto Sans CJK JP"

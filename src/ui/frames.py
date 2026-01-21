@@ -5,7 +5,8 @@ from ..logic import calculate_allocation
 from ..config import (
     FONT_FAMILY, 
     FONT_SIZE_SMALL, FONT_SIZE_NORMAL, FONT_SIZE_LARGE, FONT_SIZE_TITLE,
-    BASE_FONT_TITLE, BASE_FONT_NORMAL, BASE_FONT_ENTRIES, BASE_FONT_BUTTONS
+    BASE_FONT_TITLE, BASE_FONT_NORMAL, BASE_FONT_ENTRIES, BASE_FONT_BUTTONS,
+    BUTTON_HEIGHT_SMALL, BUTTON_HEIGHT_NORMAL
 )
 from .custom_window import CustomToplevel
 
@@ -204,11 +205,15 @@ class ResizableFrame(ctk.CTkFrame):
 
         for category, widget_list in self.widgets.items():
             new_size = int(self.base_sizes[category] * scale_factor)
-            new_size = max(12, new_size)
-            
-            font_config = ctk.CTkFont(family=FONT_FAMILY, size=new_size, weight="bold" if category in ["title", "mode"] else "normal")
+            # Base font config for category
+            is_category_bold = category in ["title", "mode", "buttons"]
             
             for widget in widget_list:
+                # Force bold for Buttons, or if category implies bold
+                # Also logic_title (starts with 【) looks better bold, but sticking to logic safe for now
+                use_bold = is_category_bold or isinstance(widget, ctk.CTkButton)
+                
+                font_config = ctk.CTkFont(family=FONT_FAMILY, size=new_size, weight="bold" if use_bold else "normal")
                 widget.configure(font=font_config)
                 
         # Apply wrapping ONLY to specified widgets
@@ -235,7 +240,7 @@ class DashboardFrame(ResizableFrame):
         normal_font = ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["normal"])
         mode_font = ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["mode"], weight="bold")
         entry_font = ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["entries"])
-        button_font = ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"])
+        button_font = ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold")
 
         self.label = ctk.CTkLabel(self, text="資産状況", font=title_font)
         self.label.grid(row=0, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
@@ -268,7 +273,7 @@ class DashboardFrame(ResizableFrame):
             self.add_widget("entries", amount_label)
 
         # Edit Button (changed from Save)
-        self.edit_button = ctk.CTkButton(self, text="資産状況を編集", command=self.edit_assets_flow, font=button_font)
+        self.edit_button = ctk.CTkButton(self, text="資産状況を編集", command=self.edit_assets_flow, font=button_font, height=BUTTON_HEIGHT_NORMAL, anchor="center")
         self.edit_button.grid(row=len(assets)+1, column=0, columnspan=2, padx=20, pady=20, sticky="ew")
         self.add_widget("buttons", self.edit_button)
         
@@ -288,7 +293,7 @@ class DashboardFrame(ResizableFrame):
         self.add_widget("normal", self.log_box)
 
         # History Button
-        self.history_btn = ctk.CTkButton(self.log_frame, text="履歴", width=60, command=self.show_history_popup, font=button_font)
+        self.history_btn = ctk.CTkButton(self.log_frame, text="履歴", width=60, command=self.show_history_popup, font=button_font, height=BUTTON_HEIGHT_NORMAL, anchor="center")
         self.history_btn.grid(row=0, column=1, padx=(10, 0), sticky="e")
         self.add_widget("buttons", self.history_btn)
 
@@ -302,8 +307,8 @@ class DashboardFrame(ResizableFrame):
         popup = CustomToplevel(self, title="Confirmation")
         
         # Calculate center position relative to main window
-        popup_w = 450
-        popup_h = 300
+        popup_w = 480
+        popup_h = 380
         self._center_popup(popup, popup_w, popup_h)
         
         # Attributes handled by CustomToplevel logic (topmost/lift)
@@ -316,17 +321,21 @@ class DashboardFrame(ResizableFrame):
         
         # Yes -> Open Edit Form
         yes_btn = ctk.CTkButton(btn_frame, text="Yes", fg_color="red", width=100, 
-                                command=lambda: [popup.destroy(), self.show_edit_form()])
+                                command=lambda: [popup.destroy(), self.show_edit_form()],
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold"),
+                                height=BUTTON_HEIGHT_NORMAL, anchor="center")
         yes_btn.pack(side="left", padx=20, expand=True)
         
         # No -> Close
-        no_btn = ctk.CTkButton(btn_frame, text="No", width=100, command=popup.destroy)
+        no_btn = ctk.CTkButton(btn_frame, text="No", width=100, command=popup.destroy,
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold"),
+                               height=BUTTON_HEIGHT_NORMAL, anchor="center")
         no_btn.pack(side="right", padx=20, expand=True)
 
     def show_edit_form(self):
         # 2. Edit Popup
         edit_win = CustomToplevel(self, title="Edit Assets")
-        self._center_popup(edit_win, 500, 520)
+        self._center_popup(edit_win, 550, 650)
         # Attributes handled by CustomToplevel
         
         edit_entries = {}
@@ -337,7 +346,7 @@ class DashboardFrame(ResizableFrame):
             ("住信SBI (生活防衛)", "sumishin_sbi")
         ]
         
-        font_config = ctk.CTkFont(family=FONT_FAMILY, size=22)
+        font_config = ctk.CTkFont(family=FONT_FAMILY, size=22, weight="bold")
         
         for i, (label_text, key) in enumerate(assets):
             label = ctk.CTkLabel(edit_win.content_frame, text=label_text, font=font_config)
@@ -352,18 +361,20 @@ class DashboardFrame(ResizableFrame):
             edit_entries[key] = entry
             
         save_btn = ctk.CTkButton(edit_win.content_frame, text="保存", font=font_config, 
-                                 command=lambda: self.save_from_popup(edit_entries, edit_win))
+                                 command=lambda: self.save_from_popup(edit_entries, edit_win),
+                                 height=BUTTON_HEIGHT_NORMAL, anchor="center")
         save_btn.pack(pady=(20, 10), padx=20, fill="x")
 
         # Reset Button (Red)
         reset_btn = ctk.CTkButton(edit_win.content_frame, text="資産状況のリセット", font=font_config, fg_color="#FF5555", hover_color="#DD3333",
-                                  command=lambda: self.confirm_reset_step1(edit_win))
+                                  command=lambda: self.confirm_reset_step1(edit_win),
+                                  height=BUTTON_HEIGHT_NORMAL, anchor="center")
         reset_btn.pack(pady=(0, 20), padx=20, fill="x")
 
     def confirm_reset_step1(self, parent):
         # Confirmation 1
         popup = CustomToplevel(self, title="caution! (1/2)")
-        self._center_popup(popup, 400, 300)
+        self._center_popup(popup, 450, 360)
         # Attributes handled by CustomToplevel
         
         label = ctk.CTkLabel(popup.content_frame, text="全ての資産情報を0にリセットしますか？\nこの操作は取り消せません。", 
@@ -375,17 +386,19 @@ class DashboardFrame(ResizableFrame):
         
         yes_btn = ctk.CTkButton(btn_frame, text="次へ", fg_color="red", width=100, 
                                 command=lambda: [popup.destroy(), self.confirm_reset_step2(parent)],
-                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold"),
+                                height=BUTTON_HEIGHT_NORMAL, anchor="center")
         yes_btn.pack(side="left", padx=20, expand=True)
         
         no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy,
-                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold"),
+                               height=BUTTON_HEIGHT_NORMAL, anchor="center")
         no_btn.pack(side="right", padx=20, expand=True)
 
     def confirm_reset_step2(self, parent):
         # Confirmation 2
         popup = CustomToplevel(self, title="final confirmation (2/2)")
-        self._center_popup(popup, 400, 300)
+        self._center_popup(popup, 450, 360)
         # Attributes handled by CustomToplevel
         
         label = ctk.CTkLabel(popup.content_frame, text="本当に実行しますか？\n全てのデータが失われます。", 
@@ -397,11 +410,13 @@ class DashboardFrame(ResizableFrame):
         
         yes_btn = ctk.CTkButton(btn_frame, text="実行する", fg_color="red", width=100, 
                                 command=lambda: [popup.destroy(), self.execute_reset(parent)],
-                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
+                                font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold"),
+                                height=BUTTON_HEIGHT_NORMAL, anchor="center")
         yes_btn.pack(side="left", padx=20, expand=True)
         
         no_btn = ctk.CTkButton(btn_frame, text="キャンセル", width=100, command=popup.destroy,
-                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"]))
+                               font=ctk.CTkFont(family=FONT_FAMILY, size=self.base_sizes["buttons"], weight="bold"),
+                               height=BUTTON_HEIGHT_NORMAL, anchor="center")
         no_btn.pack(side="right", padx=20, expand=True)
 
     def execute_reset(self, parent_window):
@@ -457,7 +472,7 @@ class DashboardFrame(ResizableFrame):
 
     def show_history_popup(self):
         top = CustomToplevel(self, title="History (Last 10)")
-        self._center_popup(top, 700, 550)
+        self._center_popup(top, 750, 620)
         
         # Attributes handled by CustomToplevel
         
@@ -527,12 +542,12 @@ class SimulatorFrame(ResizableFrame):
         self.surplus_entry.grid(row=1, column=0, padx=20, pady=10, sticky="ew")
         self.add_widget("entries", self.surplus_entry)
 
-        self.calc_button = ctk.CTkButton(self, text="配分を計算", command=self.calculate, font=button_font)
+        self.calc_button = ctk.CTkButton(self, text="配分を計算", command=self.calculate, font=button_font, height=BUTTON_HEIGHT_NORMAL, anchor="center")
         self.calc_button.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         self.add_widget("buttons", self.calc_button)
         
         # Apply button (Initially hidden)
-        self.apply_button = ctk.CTkButton(self, text="結果を反映する (YES)", command=self.apply_allocation, fg_color="green", font=button_font)
+        self.apply_button = ctk.CTkButton(self, text="結果を反映する (YES)", command=self.apply_allocation, fg_color="green", font=button_font, height=BUTTON_HEIGHT_NORMAL, anchor="center")
         self.add_widget("buttons", self.apply_button)
 
         self.result_text = ctk.CTkTextbox(self, width=300, height=200, font=normal_font)
@@ -552,8 +567,7 @@ class SimulatorFrame(ResizableFrame):
         self.logic_title.pack(side="left")
         self.add_widget("small", self.logic_title)
         
-        self.edit_logic_btn = ctk.CTkButton(self.logic_header_frame, text="設定変更", width=80, height=24, 
-                                            command=self.show_logic_edit_form, font=ctk.CTkFont(family=FONT_FAMILY, size=14))
+        self.edit_logic_btn = ctk.CTkButton(self.logic_header_frame, text="設定変更", width=80, height=BUTTON_HEIGHT_SMALL, command=self.show_logic_edit_form, font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"), anchor="center")
         self.edit_logic_btn.pack(side="right")
         self.add_widget("small", self.edit_logic_btn) 
 
@@ -651,13 +665,13 @@ class SimulatorFrame(ResizableFrame):
     def show_logic_edit_form(self):
         edit_win = CustomToplevel(self, title="Edit Settings")
         # Center popup
-        self._center_popup(edit_win, 450, 360)
+        self._center_popup(edit_win, 500, 450)
         # Attributes handled by CustomToplevel
         
         settings = self.data_manager.get_settings()
         entries = {}
         
-        font_config = ctk.CTkFont(family=FONT_FAMILY, size=20)
+        font_config = ctk.CTkFont(family=FONT_FAMILY, size=20, weight="bold")
         
         fields = [
             ("生活費目標 (PayPay)", "living_target", 100000),
@@ -679,7 +693,8 @@ class SimulatorFrame(ResizableFrame):
             entries[key] = entry
             
         save_btn = ctk.CTkButton(edit_win.content_frame, text="保存", font=font_config, 
-                                 command=lambda: self.save_logic_settings(entries, edit_win))
+                                 command=lambda: self.save_logic_settings(entries, edit_win),
+                                 height=BUTTON_HEIGHT_NORMAL, anchor="center")
         save_btn.pack(pady=20, padx=20, fill="x")
 
     def save_logic_settings(self, entries, window):
