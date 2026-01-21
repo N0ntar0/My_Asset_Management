@@ -24,20 +24,20 @@ if is_desktop_os:
     # Windows / Mac
     if system == "Windows":
         FONT_FAMILY = "Yu Gothic UI"
-        BASE_FONT_BUTTONS = 24 # Extremely large
+        BASE_FONT_BUTTONS = 16
     else:
         FONT_FAMILY = "Hiragino Sans" 
         BASE_FONT_BUTTONS = 22 # Very large for buttons
         
-    FONT_SIZE_SMALL = 18 # 16 -> 18
-    FONT_SIZE_NORMAL = 24 # 20 -> 24
-    FONT_SIZE_LARGE = 30 # 24 -> 30
-    FONT_SIZE_TITLE = 40 # 32 -> 40
+    FONT_SIZE_SMALL = 12
+    FONT_SIZE_NORMAL = 14
+    FONT_SIZE_LARGE = 18
+    FONT_SIZE_TITLE = 24
     
     # Resizable Frame Base Sizes
-    BASE_FONT_TITLE = 42 # 36 -> 42
-    BASE_FONT_NORMAL = 26 # 22 -> 26
-    BASE_FONT_ENTRIES = 26 # 22 -> 26
+    BASE_FONT_TITLE = 28
+    BASE_FONT_NORMAL = 16
+    BASE_FONT_ENTRIES = 16
     # BASE_FONT_BUTTONS handled above
     
     # Button Heights
