@@ -326,7 +326,7 @@ class DashboardFrame(ResizableFrame):
     def show_edit_form(self):
         # 2. Edit Popup
         edit_win = CustomToplevel(self, title="Edit Assets")
-        self._center_popup(edit_win, 500, 500)
+        self._center_popup(edit_win, 500, 520)
         # Attributes handled by CustomToplevel
         
         edit_entries = {}
@@ -643,7 +643,7 @@ class SimulatorFrame(ResizableFrame):
     def show_logic_edit_form(self):
         edit_win = CustomToplevel(self, title="Edit Settings")
         # Center popup
-        self._center_popup(edit_win, 450, 330)
+        self._center_popup(edit_win, 450, 360)
         # Attributes handled by CustomToplevel
         
         settings = self.data_manager.get_settings()
