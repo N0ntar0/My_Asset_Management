@@ -566,10 +566,18 @@ class SimulatorFrame(ResizableFrame):
                                         justify="left", anchor="w")
         self.logic_label.pack(fill="both", padx=10, pady=10)
         
-        # Add to widgets for resizing AND wrapping
-        self.add_widget("small", self.logic_label, wrap=True)
+        # Add to widgets for resizing (wrapping handled dynamically by event)
+        self.add_widget("small", self.logic_label)
+        
+        # Bind configure event to update wraplength dynamically
+        self.logic_bg.bind("<Configure>", self._update_logic_wrap)
         
         self.update_logic_text()
+
+    def _update_logic_wrap(self, event):
+        # Update wraplength to match the frame width minus padding (20px)
+        wrap_width = max(100, event.width - 20)
+        self.logic_label.configure(wraplength=wrap_width)
 
     def update_logic_text(self):
         settings = self.data_manager.get_settings()
